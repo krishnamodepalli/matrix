@@ -1,0 +1,3 @@
+
+.vscode/ # for vscode generated files.
+*.out # for gcc generated files.
