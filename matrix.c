@@ -5,6 +5,7 @@ int a, b, c, d; // Orders of all matrices.
 int add(int A[a][b], int B[c][d]); // Function to add 2 matrices.
 int sub(int A[a][b], int B[c][d]); // Function to subtract 2 matrices.
 int mul(int A[a][b], int B[c][d]); // Function to multiply 2 matrices.
+int transpose(int A[a][b]); // Function to find transpse of a matrix.
 int det(int a, int A[a][a]); // Function to find the determinant of a matrix.
 int power(int); //Function used by det(..) matrix to get accurate results.
 // Mainly to when we multiply (-1)^(i+j) in finding determinant of a matrx.
@@ -12,7 +13,7 @@ int power(int); //Function used by det(..) matrix to get accurate results.
 int main()
 {
 	int choice, outcome; // Choice variable to let user choose from options & outcome to recieve the function reeturn-values.
-	printf("1 . Addition\n2 . Subtraction\n3 . Multiplication\n4 . Determinant\n");
+	printf("1 . Addition\n2 . Subtraction\n3 . Multiplication\n4 . Determinant\n5 . Transpose\n");
 	printf("Enter your choice : ");
 	scanf("%d", &choice); // Reading the choice variable.
 	if (choice == 1 || choice == 2 || choice == 3) // Condition check if `choice` either 1 or 2 or 3.
@@ -64,10 +65,11 @@ int main()
 		printf("Something went wrong.\n");
 		return 1;
 	}
-	else if (choice == 4) // Else if choice == 4,
+	else if (choice == 4 || choice == 5) // Else if choice is either 4 or 5.
 	{
-		printf("Note: Determinant is found for only square matrix.\n");
-		printf("Enter the (n x n) n value : "); // Determinant is calculated for only square matrix.
+
+		printf("Note: Determinant or Transpose or Inverse is calculated for only square matrix.\n");
+		printf("Enter the (n x n) n value : "); // Determinant, Transpose, Inverse is calculated for only square matrix.
 		scanf("%d", &a);
 		b = a;
 		printf("Enter the matrx :\n");
@@ -77,37 +79,42 @@ int main()
 			for (int j = 0; j < b; j++)
 				scanf("%d", &A[i][j]);
 		}
-		outcome = det(a, A); // Calling det() function.
-		printf("Determinant : %d\n", outcome);
+		if (choice == 4){
+			outcome = det(a, A); // Calling det() function.
+			printf("Determinant : %d\n", outcome);
+		}
+		else if (choice == 5)
+			transpose(A);
+		printf("Every thing has done perfrectly.\nAll operations are compleated.\n");
 		return 0; // Returning 0.
 	}
 }
 
-int add(int A[a][b], int B[c][d])
+int add(int A[a][b], int B[c][d]) // Function for addition.
 {
 	printf("Resultant matrix :\n");
 	for (int i = 0; i < a; i++)
 	{
 		for (int j = 0; j < b; j++)
-			printf("%d ", A[i][j] + B[i][j]);
+			printf("%d ", A[i][j] + B[i][j]); // Printing the sum of 2 maatrices.
 		printf("\n");
 	}
 	return 0;
 }
 
-int sub(int A[a][b], int B[c][d])
+int sub(int A[a][b], int B[c][d]) // Function for Subtraction.
 {
 	printf("Resultant matrix :\n");
 	for (int i = 0; i < a; i++)
 	{
 		for (int j = 0; j < b; j++)
-			printf("%d ", A[i][j] - B[i][j]);
+			printf("%d ", A[i][j] - B[i][j]); // Printing the difference of 2 matrices.
 		printf("\n");
 	}
 	return 0;
 }
 
-int mul(int A[a][b], int B[c][d])
+int mul(int A[a][b], int B[c][d]) // Function for multiplication.
 {
 	printf("Resultant matrix :\n");
 	for (int i = 0; i < a; i++)
@@ -117,15 +124,15 @@ int mul(int A[a][b], int B[c][d])
 			item = 0;
 			for (int k = 0; k < b; k++)
 				item += A[i][k]*B[k][j];
-			printf("%d ", item);
+			printf("%d ", item); // Calculating each element of resulatant matrix and printing it.
 		}
 		printf("\n");
 	}
 	return 0;
 }
 
-int det(int a, int A[a][a])
-{
+int det(int a, int A[a][a]) // Function for calculating determinant of a matrix.
+{ // This is a recursive function. Because for 3x3 or more ordered matrix, we need all the dets of smaller sub-matrices of the matrix.
 	if (a > 2)
 	{
 		int determinant = 0;
@@ -139,12 +146,28 @@ int det(int a, int A[a][a])
 			}
 			determinant += (a%2==0?power(i):1)*A[0][i]*det(a - 1, sub_matrix);
 		}
-		return determinant;
+		return determinant; // Returning the result to main().
 	}
 	return A[0][0]*A[1][1] - A[0][1]*A[1][0];
 }
 
+int transpose(int A[a][b])
+{
+	for (int i = 0; i < a; i++)
+	{
+		for (int j = 0; j < a; j++)
+		{
+			if (j > i) // Selecting specific elements of matri for swaping
+				A[j][i] = A[i][j] + A[j][i] - (A[i][j] = A[j][i]); // Swaping the elements of the matrix.
+			printf("%d ", A[i][j]); // Printing each element regardless of checking the condition.
+		}
+		printf("\n");
+	}
+	return 0;
+}
+
 int power(int n)
+// Function to help the det() funtion while calculating determinant.
 {
 	int result = 1;
 	for (int i = 0; i < n; i++)
