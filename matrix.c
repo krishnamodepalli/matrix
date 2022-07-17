@@ -1,10 +1,10 @@
 
 #include <stdio.h>
 
-int a, b, c, d; // Orders of all matrices.
-int add(int A[a][b], int B[c][d]); // Function to add 2 matrices.
-int sub(int A[a][b], int B[c][d]); // Function to subtract 2 matrices.
-int mul(int A[a][b], int B[c][d]); // Function to multiply 2 matrices.
+int a, b, c, d; // Orders of all matrices. (a, b) -> matrix A, (c, d) -> matrix B.
+int add(int *A, int *B); // Function to add 2 matrices.
+int sub(int *A, int *B); // Function to subtract 2 matrices.
+int mul(int *A, int *B); // Function to multiply 2 matrices.
 int transpose(int A[a][b]); // Function to find transpse of a matrix.
 int det(int a, int A[a][a]); // Function to find the determinant of a matrix.
 int power(int); //Function used by det(..) matrix to get accurate results.
@@ -18,7 +18,7 @@ int main()
 	scanf("%d", &choice); // Reading the choice variable.
 	if (choice == 1 || choice == 2 || choice == 3) // Condition check if `choice` either 1 or 2 or 3.
 	{
-	error:
+	orders_error:
 		if (choice == 1) // If addition or
 			printf("Note: For addition, orders of both matrices should be same.\n");
 		else if (choice == 2) // subtraction orders must be same.
@@ -33,7 +33,7 @@ int main()
 		if (((choice == 1 || choice == 2) && ((a != c) || (b != d))) || ((choice == 3) && (b != c))){
 			// Checking if orders are in correct way.
 			printf("You are mistaken in entering the orders of matrices.\n");
-			goto error; //If not redirecting the user to type in the orders once again.
+			goto orders_error; //If not redirecting the user to type in the orders once again.
 		}
 
 		int A[a][b], B[c][d]; // Declaring both the matrices.
@@ -41,24 +41,24 @@ int main()
 		for (int i = 0; i < a; i++)
 		{
 			for (int j = 0; j < b; j++)
-				scanf("%d", &A[i][j]);
+				scanf("%d", *(A+i*b+j)); // NOTE: Scaning through pointers.
 		}
 		printf("Enter the 2nd matrix :\n"); // Reading 2nd matrix.
 		for (int i = 0; i < c; i++)
 		{
 			for (int j = 0; j < d; j++)
-				scanf("%d", &B[i][j]);
+				scanf("%d", *(A+i*d+j)); // NOTE: Scaning through pointers.
 		}
 		// Redirecting to corrosponding function.
 		if (choice == 1)
-			outcome = add(A, B);
+			outcome = add(*A, *B);
 		else if (choice == 2)
-			outcome = sub(A, B);
+			outcome = sub(*A, *B);
 		else
-			outcome = mul(A, B);
+			outcome = mul(*A, *B);
 		if (outcome == 0) // Returning 0 if all functions returned 0.
 		{
-			printf("Every thing has done perfrectly.\nAll operations are compleated.\n");
+			printf("Every thing has run perfrectly.\nAll operations are completed.\n");
 			return 0;
 		}
 		// Else, returning 1.
@@ -85,36 +85,41 @@ int main()
 		}
 		else if (choice == 5)
 			transpose(A);
-		printf("Every thing has done perfrectly.\nAll operations are compleated.\n");
+		printf("Every thing has run perfrectly.\nAll operations are completed.\n");
 		return 0; // Returning 0.
 	}
+	else
+	{
+		printf("Invalid Input!!!\nStart the program again.");
+		return 1;
+	}
 }
 
-int add(int A[a][b], int B[c][d]) // Function for addition.
+int add(int *A, int *B) // Function for addition.
 {
 	printf("Resultant matrix :\n");
 	for (int i = 0; i < a; i++)
 	{
 		for (int j = 0; j < b; j++)
-			printf("%d ", A[i][j] + B[i][j]); // Printing the sum of 2 maatrices.
+			printf("%d ", *(A+i*b+j) + *(B+i*b+j)); // Printing the sum of 2 maatrices.
 		printf("\n");
 	}
 	return 0;
 }
 
-int sub(int A[a][b], int B[c][d]) // Function for Subtraction.
+int sub(int *A, int *B) // Function for Subtraction.
 {
 	printf("Resultant matrix :\n");
 	for (int i = 0; i < a; i++)
 	{
 		for (int j = 0; j < b; j++)
-			printf("%d ", A[i][j] - B[i][j]); // Printing the difference of 2 matrices.
+			printf("%d ", *(A+i*b+j) - *(B+i*b+j)); // Printing the difference of 2 matrices.
 		printf("\n");
 	}
 	return 0;
 }
 
-int mul(int A[a][b], int B[c][d]) // Function for multiplication.
+int mul(int *A, int *B) // Function for multiplication.
 {
 	printf("Resultant matrix :\n");
 	for (int i = 0; i < a; i++)
@@ -123,7 +128,7 @@ int mul(int A[a][b], int B[c][d]) // Function for multiplication.
 		{
 			item = 0;
 			for (int k = 0; k < b; k++)
-				item += A[i][k]*B[k][j];
+				item += *(A+i*b+k)*(*(B+k*d+j));
 			printf("%d ", item); // Calculating each element of resulatant matrix and printing it.
 		}
 		printf("\n");
@@ -153,6 +158,7 @@ int det(int a, int A[a][a]) // Function for calculating determinant of a matrix.
 
 int transpose(int A[a][b])
 {
+	printf("Resultant matrix :\n");
 	for (int i = 0; i < a; i++)
 	{
 		for (int j = 0; j < a; j++)
